@@ -1,0 +1,14 @@
+<h2>{{@title}}</h2>
+
+<!-- 'this' refers to the js file associated with this hbs file -->
+
+<ul>
+  {{#each @songs as |song|}}
+    <li>
+      <details>
+        <summary>{{song.title}}</summary>
+        <p>{{song.text}}</p>
+      </details>
+    </li>
+  {{/each}}
+</ul>

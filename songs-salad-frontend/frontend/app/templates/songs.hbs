@@ -1,0 +1,13 @@
+{{page-title "Songs"}}
+
+<!-- @model is the output of the model function in the associated route js file -->
+
+<section>
+
+  <SearchBar @setSearchText={{@model.setSearchText}}/>
+
+  <SongsList @songs={{@model.songs}} @title="Matching songs" />
+
+</section>
+
+{{yield}}
