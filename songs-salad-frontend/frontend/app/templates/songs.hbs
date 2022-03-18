@@ -3,8 +3,10 @@
 <!-- @model is the output of the model function in the associated route js file -->
 
 <section>
+  <h2>Search songs</h2>
 
-  <SearchBar @setSearchText={{@model.setSearchText}}/>
+  <SearchBar @label="Search songs whose text contain the following word: " @setSearchText={{@model.setSearchText}}/>
+  <SearchBar @label="Search songs by title: " @setSearchText={{@model.setSearchTitle}}/>
 
   <SongsList @songs={{@model.songs}} @title="Matching songs" />
 

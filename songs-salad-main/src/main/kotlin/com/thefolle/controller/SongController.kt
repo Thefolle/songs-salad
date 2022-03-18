@@ -1,5 +1,6 @@
 package com.thefolle.controller
 
+import com.thefolle.domain.Phase
 import com.thefolle.dto.SongDto
 import com.thefolle.service.SongService
 import org.springframework.beans.factory.annotation.Autowired
@@ -32,6 +33,31 @@ class SongController {
 
     }
 
+    @PostMapping("/{id}/phases")
+    fun addPhase(@PathVariable("id") songId: Long, @RequestBody phase: Phase.PhaseValue): ResponseEntity<Void> {
+        songService
+                .addPhase(
+                        songId,
+                        phase
+                )
+
+        return ResponseEntity
+                .ok(
+                        null
+                )
+    }
+
+    @DeleteMapping("/{id}/phases")
+    fun deletePhase(@PathVariable("id") songId: Long, @RequestBody phase: Phase.PhaseValue): ResponseEntity<Void> {
+        songService
+                .deletePhase(songId, phase)
+
+        return ResponseEntity
+                .ok(
+                        null
+                )
+    }
+
 
 
     /**
@@ -41,7 +67,7 @@ class SongController {
      */
     @CrossOrigin
     @GetMapping("", produces = ["application/vnd.api+json"])
-    fun getSongsContainingText(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("title", required = false) searchInTitle: String?): ResponseEntity<CollectionModel<SongDto>> {
+    fun getSongsContainingText(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("searchInTitle", required = false) searchInTitle: String?): ResponseEntity<CollectionModel<SongDto>> {
         var searchInTextMapped = searchInText ?: ""
         var searchInTitleMapped = searchInTitle ?: ""
 

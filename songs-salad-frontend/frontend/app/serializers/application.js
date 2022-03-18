@@ -10,11 +10,13 @@ export default class ApplicationSerializer extends JSONAPISerializer {
       song.attributes = {
         text: song.text,
         title: song.title,
+        phases: song.phases,
       };
-      song.type = 'song'
+      song.type = 'song';
 
-      delete song.text
-      delete song.title
+      delete song.text;
+      delete song.title;
+      delete song.phases;
     });
 
     return super.normalizeResponse(...arguments);

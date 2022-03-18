@@ -11,11 +11,13 @@ class Song(
         @GeneratedValue
         var id: Long?,
         val text: String,
-        val title: String
+        val title: String,
+        var phases: Set<Phase>
 ) {
         fun toDto() = SongDto(
                 id.toString(),
                 text,
-                title
+                title,
+                phases.map { it.phaseValue }.toSet()
         )
 }

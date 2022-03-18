@@ -7,6 +7,9 @@
     <li>
       <details>
         <summary>{{song.title}}</summary>
+        {{#if song.phases}}
+          <p>For: {{song.phases}}</p>
+        {{/if}}
         <p>{{song.text}}</p>
       </details>
     </li>
