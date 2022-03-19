@@ -12,6 +12,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+import java.net.URI
 
 @Service
 class SongService {
@@ -20,13 +21,16 @@ class SongService {
     lateinit var songRepository: SongRepository
 
     fun addSong(songDto: SongDto): Long {
+
+
         return songRepository
                 .save(
                         Song(
                                 id = null,
                                 text = songDto.text,
                                 title = songDto.title,
-                                setOf()
+                                phases = songDto.phases.map { Phase(it) }.toSet(),
+                                sheet = songDto.sheet
                         )
                 )
                 .id!!
@@ -63,7 +67,7 @@ class SongService {
                         .withMatcher("title", ExampleMatcher.GenericPropertyMatcher().contains().ignoreCase())
                         .withIgnorePaths("id")
 
-        val example = Example.of(Song(null, searchString, searchTitleMapped, setOf()), exampleMatcher)
+        val example = Example.of(Song(null, searchString, searchTitleMapped, setOf(), setOf()), exampleMatcher)
         return songRepository
                 .findAll(example)
                 .map { it.toDto() }

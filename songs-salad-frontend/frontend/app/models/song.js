@@ -4,4 +4,5 @@ export default class SongModel extends Model {
   @attr('string') text;
   @attr('string') title;
   @attr phases
+  @attr sheet
 }

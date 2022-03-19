@@ -30,7 +30,6 @@ class SongController {
                         songService
                                 .addSong(songDto)
                 )
-
     }
 
     @PostMapping("/{id}/phases")
@@ -59,7 +58,6 @@ class SongController {
     }
 
 
-
     /**
      * Useful to either:
      * - search a song by theme or tag: Masses often turn around a keyword;
@@ -67,7 +65,7 @@ class SongController {
      */
     @CrossOrigin
     @GetMapping("", produces = ["application/vnd.api+json"])
-    fun getSongsContainingText(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("searchInTitle", required = false) searchInTitle: String?): ResponseEntity<CollectionModel<SongDto>> {
+    fun getSongs(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("searchInTitle", required = false) searchInTitle: String?): ResponseEntity<CollectionModel<SongDto>> {
         var searchInTextMapped = searchInText ?: ""
         var searchInTitleMapped = searchInTitle ?: ""
 
