@@ -1,6 +1,22 @@
 {{page-title "Songs-salad"}}
 
-<h1>Songs salad</h1>
-
+<BsNavbar
+  @type="light"
+  @backgroundColor="green"
+  as |navbar|
+>
+  <LinkTo @route="index" class="navbar-brand"><h1 style="font-weight: bold;">Songs salad</h1></LinkTo>
+  <navbar.toggle/>
+  <navbar.content>
+    <navbar.nav as |nav|>
+      <nav.item>
+        <nav.link-to @route="index">Home</nav.link-to>
+      </nav.item>
+      <nav.item>
+        <nav.link-to @route="songs">Search songs</nav.link-to>
+      </nav.item>
+    </navbar.nav>
+  </navbar.content>
+</BsNavbar>
 
 {{outlet}}

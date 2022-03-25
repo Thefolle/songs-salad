@@ -1,6 +1,8 @@
 package com.thefolle.service
 
+import com.thefolle.domain.Fragment
 import com.thefolle.domain.Phase
+import com.thefolle.domain.Sheet
 import com.thefolle.domain.Song
 import com.thefolle.dto.SongDto
 import com.thefolle.repository.SongRepository
@@ -22,12 +24,14 @@ class SongService {
 
     fun addSong(songDto: SongDto): Long {
 
+        checkFragmentsIntegrity(songDto.body)
 
         return songRepository
                 .save(
                         Song(
                                 id = null,
                                 text = songDto.text,
+                                body = songDto.body,
                                 title = songDto.title,
                                 phases = songDto.phases.map { Phase(it) }.toSet(),
                                 sheet = songDto.sheet
@@ -59,6 +63,13 @@ class SongService {
                 .save(song)
     }
 
+    fun addSheet(songId: Long, sheet: Sheet) {
+        var song = findByIdOrThrow(songId)
+        song.sheet = sheet
+        songRepository
+                .save(song)
+    }
+
     fun getSongsContainingText(searchString: String, searchTitleMapped: String): List<SongDto> {
         val exampleMatcher =
                 ExampleMatcher
@@ -67,10 +78,15 @@ class SongService {
                         .withMatcher("title", ExampleMatcher.GenericPropertyMatcher().contains().ignoreCase())
                         .withIgnorePaths("id")
 
-        val example = Example.of(Song(null, searchString, searchTitleMapped, setOf(), setOf()), exampleMatcher)
+        val example = Example.of(Song(null, searchString, setOf(), searchTitleMapped, setOf(), null), exampleMatcher)
         return songRepository
                 .findAll(example)
                 .map { it.toDto() }
+    }
+
+    fun getSong(songId: Long): SongDto {
+        return findByIdOrThrow(songId)
+                .toDto()
     }
 
     fun deleteSongById(id: Long) {
@@ -82,6 +98,27 @@ class SongService {
 
         songRepository
                 .deleteById(id)
+    }
+
+    /***
+     * Checks whether the fragments start from 0 up to fragments.length - 1
+     */
+    private fun checkFragmentsIntegrity(fragments: Set<Fragment>) {
+        if (fragments.isEmpty()) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "A song has to contain at least one fragment!")
+        } else if (fragments.any { it.position < 0 }) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The position of a fragment cannot be negative!")
+        }
+
+        var sortedFragments = fragments
+                .sortedBy { it.position }
+        var nonStrictFragments = sortedFragments
+                .filterIndexed { index, fragment -> fragment.position != index.toLong() }
+        if (nonStrictFragments.isNotEmpty()) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Positions of fragments must be strictly incremental, starting from 0." +
+                            "Please, redefine the fragment with position ${nonStrictFragments.first().position}")
+        }
     }
 
 }

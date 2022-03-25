@@ -1,6 +1,7 @@
 package com.thefolle.controller
 
 import com.thefolle.domain.Phase
+import com.thefolle.domain.Sheet
 import com.thefolle.dto.SongDto
 import com.thefolle.service.SongService
 import org.springframework.beans.factory.annotation.Autowired
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
@@ -57,6 +59,17 @@ class SongController {
                 )
     }
 
+    @PutMapping("/{id}/sheet")
+    fun addSheet(@PathVariable("id") songId: Long, @RequestBody sheet: Sheet): ResponseEntity<Void> {
+        songService
+                .addSheet(songId, sheet)
+
+        return ResponseEntity
+                .ok(
+                        null
+                )
+    }
+
 
     /**
      * Useful to either:
@@ -76,6 +89,18 @@ class SongController {
                         CollectionModel
                                 .of(
                                         songs
+                                )
+                )
+    }
+
+    @CrossOrigin
+    @GetMapping("/{id}", produces = ["application/vnd.api+json"])
+    fun getSong(@PathVariable("id") songId: Long) : ResponseEntity<SongDto> {
+        return ResponseEntity
+                .ok(
+                        songService
+                                .getSong(
+                                        songId
                                 )
                 )
     }

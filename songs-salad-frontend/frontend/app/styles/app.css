@@ -2,6 +2,24 @@ p {
   white-space: pre-line;
 }
 
-summary:hover {
-  background-color: gainsboro
+nav {
+  background-color: green;
+
+  min-height: 100px;
+}
+
+section {
+  padding: 10px 10px 10px 10px;
+}
+
+.carousel-control-next,
+.carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(100%);
+}
+
+.carousel-item > img {
+  width: 80%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
 }

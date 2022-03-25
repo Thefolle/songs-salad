@@ -1,0 +1,22 @@
+{{page-title "Sheet"}}
+
+<BsCarousel
+  @autoPlay={{false}}
+  @wrap={{false}}
+  @index={{0}}
+  @interval={{0}}
+  @keyboard={{true}}
+  @ltr={{true}}
+  @pauseOnMouseEnter={{false}}
+  @showControls={{true}}
+  @showIndicators={{true}}
+  as |carousel|>
+  {{#each @model.pages as |page|}}
+    <carousel.slide>
+      <img src="http://localhost:8081/sheets/{{@model.sheet.id}}/pages/{{page}}" alt="Could not get the preview of the sheet.">  <!--take just the first page as a thumbnail-->
+    </carousel.slide>
+  {{/each}}
+</BsCarousel>
+
+
+{{outlet}}
