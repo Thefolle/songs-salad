@@ -1,5 +1,6 @@
 package com.thefolle.controller
 
+import com.thefolle.domain.Fragment
 import com.thefolle.domain.Phase
 import com.thefolle.domain.Sheet
 import com.thefolle.dto.SongDto
@@ -63,6 +64,17 @@ class SongController {
     fun addSheet(@PathVariable("id") songId: Long, @RequestBody sheet: Sheet): ResponseEntity<Void> {
         songService
                 .addSheet(songId, sheet)
+
+        return ResponseEntity
+                .ok(
+                        null
+                )
+    }
+
+    @PutMapping("/{id}/fragments")
+    fun addFragment(@PathVariable("id") songId: Long, @RequestBody fragment: Fragment): ResponseEntity<Void> {
+        songService
+                .addFragment(songId, fragment)
 
         return ResponseEntity
                 .ok(

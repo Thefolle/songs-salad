@@ -17,6 +17,7 @@ class Phase(
         Offertory,
         Saint,
         Communion,
-        End
+        End,
+        Baptism
     }
 }

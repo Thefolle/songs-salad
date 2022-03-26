@@ -12,6 +12,15 @@ export default class ApplicationSerializer extends JSONAPISerializer {
         text: song.text,
         title: song.title,
         phases: song.phases,
+        body: song.body.map(fragment => { return {
+          id: fragment.id,
+          type: 'fragment',
+          attributes: {
+            text: fragment.text,
+            position: fragment.position,
+            isChorus: fragment.isChorus
+          }
+        }}).sort((fragment1, fragment2) => fragment1.attributes.position - fragment2.attributes.position)
       };
       song.type = 'song';
 
@@ -26,10 +35,34 @@ export default class ApplicationSerializer extends JSONAPISerializer {
         };
       }
 
-      delete song.text;
-      delete song.title;
-      delete song.phases;
-      delete song.sheet;
+/* Must first implement /songs/{song_id} on the frontend */
+/*      if (song.body) {
+        if (!song.relationships) song.relationships = {};
+        song.relationships.body = {
+          data: song.body.map(body => { return {
+                          id: body.id,
+                          type: 'fragment'
+                        }})
+        }
+
+
+
+        payload.included = song.body.map(body => { return {
+                                  id: body.id,
+                                  type: 'fragment',
+                                  attributes: {
+                                    text: body.text,
+                                    position: body.position,
+                                    isChorus: body.isChorus
+                                  }
+                                }})
+      }*/
+
+      delete song.text
+      delete song.title
+      delete song.phases
+      delete song.sheet
+      delete song.body
     });
 
     return super.normalizeQueryResponse(...arguments);

@@ -70,6 +70,15 @@ class SongService {
                 .save(song)
     }
 
+    fun addFragment(songId: Long, fragment: Fragment) {
+        var song = findByIdOrThrow(songId)
+        song.body = song.body + fragment
+        checkFragmentsIntegrity(song.body)
+
+        songRepository
+                .save(song)
+    }
+
     fun getSongsContainingText(searchString: String, searchTitleMapped: String): List<SongDto> {
         val exampleMatcher =
                 ExampleMatcher
@@ -108,6 +117,8 @@ class SongService {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "A song has to contain at least one fragment!")
         } else if (fragments.any { it.position < 0 }) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "The position of a fragment cannot be negative!")
+        } else if (fragments.count { it.isChorus } > 1) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "A song cannot contain more than one chorus!")
         }
 
         var sortedFragments = fragments

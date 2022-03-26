@@ -7,7 +7,17 @@
         {{#if song.phases}}
           <p>For: {{song.phases}}</p>
         {{/if}}
-        <p>{{song.text}}</p>
+        {{#if song.body}}
+          {{#each song.body as |fragment|}}
+            {{#if fragment.attributes.isChorus}}
+              <p style="font-weight: bold;">{{fragment.attributes.text}}</p> <!-- parametrizing the style attribute is deprecated-->
+            {{else}}
+              <p>{{fragment.attributes.text}}</p>
+            {{/if}}
+          {{/each}}
+        {{else}}
+          <p>{{song.text}}</p>
+        {{/if}}
         {{#if song.sheet}}
           <div> <!-- The div makes the image cover the whole width -->
             <img src="http://localhost:8081/sheets/{{song.sheet.id}}/pages/0" width="100%" alt="Could not get the preview of the sheet.">  <!--take just the first page as a thumbnail-->
@@ -18,6 +28,9 @@
         {{else}}
           <i>No sheet is available for this song yet.</i>
         {{/if}}
+
+
+
     </accordion.item>
   {{/each}}
 </BsAccordion>

@@ -9,6 +9,7 @@ class Fragment(
         @Id
         @GeneratedValue
         var id: Long?,
+        // the structural position of the fragment, not about the execution order
         var position: Long,
         var text: String,
         var isChorus: Boolean
