@@ -1,8 +1,10 @@
 package com.thefolle.controller
 
 import com.thefolle.domain.Sheet
+import com.thefolle.dto.SheetDto
 import com.thefolle.service.SheetService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -35,13 +37,17 @@ class SheetController {
 
     @CrossOrigin
     @GetMapping("/{id}", produces = ["application/vnd.api+json"])
-    fun getSheet(@PathVariable("id") sheetId: Long): ResponseEntity<Sheet> {
+    fun getSheet(@PathVariable("id") sheetId: Long): ResponseEntity<SheetDto> {
+        val sheet =  sheetService
+                .getSheet(
+                        sheetId
+                )
+        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SongController::class.java).getSongs(null, null)).withRel("songs")
+        sheet.add(link)
+
         return ResponseEntity
                 .ok(
-                        sheetService
-                                .getSheet(
-                                        sheetId
-                                )
+                        sheet
                 )
     }
 

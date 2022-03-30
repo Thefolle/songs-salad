@@ -8,9 +8,10 @@ import java.net.URI
 
 class SongDto(
         var id: String?,
-        var text: String,
-        var body: Set<Fragment>,
+        var text: String?,
+        var body: Set<FragmentDto>,
         var title: String,
+        var author: String?,
         var phases: Set<Phase.PhaseValue> = setOf(),
         var sheet: Sheet?)
     : RepresentationModel<SongDto>() {

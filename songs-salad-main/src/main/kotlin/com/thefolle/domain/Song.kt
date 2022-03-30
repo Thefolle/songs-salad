@@ -4,6 +4,7 @@ import com.thefolle.dto.SongDto
 import org.springframework.data.neo4j.core.schema.GeneratedValue
 import org.springframework.data.neo4j.core.schema.Id
 import org.springframework.data.neo4j.core.schema.Node
+import org.springframework.data.neo4j.core.schema.Relationship
 import java.net.URI
 import java.net.URL
 
@@ -13,17 +14,19 @@ class Song(
         @GeneratedValue
         var id: Long?,
         @Deprecated("The text property is going to be removed in favor of verses and chorus.")
-        val text: String,
+        val text: String?,
         var body: Set<Fragment>,
         val title: String,
+        var author: String?,
         var phases: Set<Phase>,
         var sheet: Sheet? = null
 ) {
         fun toDto() = SongDto(
                 id.toString(),
                 text,
-                body,
+                body.map { it.toDto() }.toSet(),
                 title,
+                author,
                 phases.map { it.phaseValue }.toSet(),
                 sheet
         )

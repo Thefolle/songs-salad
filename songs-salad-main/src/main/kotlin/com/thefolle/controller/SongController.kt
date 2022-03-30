@@ -1,12 +1,16 @@
 package com.thefolle.controller
 
-import com.thefolle.domain.Fragment
 import com.thefolle.domain.Phase
 import com.thefolle.domain.Sheet
+import com.thefolle.dto.FragmentDto
 import com.thefolle.dto.SongDto
 import com.thefolle.service.SongService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.hateoas.CollectionModel
+import org.springframework.hateoas.LinkRelation
+import org.springframework.hateoas.RepresentationModel
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/songs", consumes = ["application/vnd.api+json", "application/json"])
@@ -27,11 +32,20 @@ class SongController {
     lateinit var songService: SongService
 
     @PostMapping("")
-    fun addSong(@RequestBody songDto: SongDto): ResponseEntity<Long> {
+    fun addSong(@RequestBody songDto: SongDto): ResponseEntity<RepresentationModel<*>> {
+        val songId = songService
+                .addSong(songDto)
+
+        val songLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SongController::class.java).getSong(songId)).withSelfRel()
+
         return ResponseEntity
-                .ok(
-                        songService
-                                .addSong(songDto)
+                .status(HttpStatus.CREATED)
+                .body(
+                       RepresentationModel
+                               .of(
+                                       null,
+                                       listOf(songLink)
+                               )
                 )
     }
 
@@ -71,16 +85,41 @@ class SongController {
                 )
     }
 
-    @PutMapping("/{id}/fragments")
-    fun addFragment(@PathVariable("id") songId: Long, @RequestBody fragment: Fragment): ResponseEntity<Void> {
+    @PostMapping("/{id}/fragments")
+    fun addFragment(@PathVariable("id") songId: Long, @RequestBody fragmentDto: FragmentDto): ResponseEntity<Void> {
         songService
-                .addFragment(songId, fragment)
+                .addFragment(songId, fragmentDto)
 
         return ResponseEntity
                 .ok(
                         null
                 )
     }
+
+    @PutMapping("/{id}/fragments/{position}")
+    fun updateFragment(@PathVariable("id") songId: Long, @PathVariable("position") position: Long, @RequestBody fragmentDto: FragmentDto): ResponseEntity<Void> {
+        if (position != fragmentDto.position) throw ResponseStatusException(HttpStatus.CONFLICT, "The parameter 'position' in the URI and the corresponding field in the request body must match!")
+
+        songService
+                .updateFragment(songId, position, fragmentDto)
+
+        return ResponseEntity
+                .ok(
+                        null
+                )
+    }
+
+    @PutMapping("/{id}/author")
+    fun updateAuthor(@PathVariable("id") songId: Long, @RequestBody author: String): ResponseEntity<Void> {
+        songService
+                .updateAuthor(songId, author)
+
+        return ResponseEntity
+                .ok(
+                        null
+                )
+    }
+
 
 
     /**
@@ -91,10 +130,14 @@ class SongController {
     @CrossOrigin
     @GetMapping("", produces = ["application/vnd.api+json"])
     fun getSongs(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("searchInTitle", required = false) searchInTitle: String?): ResponseEntity<CollectionModel<SongDto>> {
-        var searchInTextMapped = searchInText ?: ""
-        var searchInTitleMapped = searchInTitle ?: ""
+        val searchInTextMapped = searchInText ?: ""
+        val searchInTitleMapped = searchInTitle ?: ""
 
-        var songs = songService.getSongsContainingText(searchInTextMapped, searchInTitleMapped)
+        val songs = songService.getSongsContainingText(searchInTextMapped, searchInTitleMapped)
+
+        songs.forEach {
+            it.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSong(it.id!!.toLong())).withSelfRel())
+        }
 
         return ResponseEntity
                 .ok(
@@ -108,12 +151,25 @@ class SongController {
     @CrossOrigin
     @GetMapping("/{id}", produces = ["application/vnd.api+json"])
     fun getSong(@PathVariable("id") songId: Long) : ResponseEntity<SongDto> {
+        val song = songService
+                .getSong(
+                        songId
+                )
+
+        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSongs(null, null)).withRel("collection")
+        val selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSong(songId)).withSelfRel()
+        song.add(link)
+        song.add(selfLink)
+        val sheetId = song.sheet?.id
+        if (sheetId != null) {
+            val sheetLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SheetController::class.java).getSheet(sheetId)).withRel("sheet")
+            song.add(sheetLink)
+        }
+
+
         return ResponseEntity
                 .ok(
-                        songService
-                                .getSong(
-                                        songId
-                                )
+                        song
                 )
     }
 

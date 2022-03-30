@@ -4,17 +4,15 @@ import com.thefolle.domain.Fragment
 import com.thefolle.domain.Phase
 import com.thefolle.domain.Sheet
 import com.thefolle.domain.Song
+import com.thefolle.dto.FragmentDto
 import com.thefolle.dto.SongDto
+import com.thefolle.repository.FragmentRepository
 import com.thefolle.repository.SongRepository
-import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.domain.Example
-import org.springframework.data.domain.ExampleMatcher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
-import java.net.URI
 
 @Service
 class SongService {
@@ -22,17 +20,22 @@ class SongService {
     @Autowired
     lateinit var songRepository: SongRepository
 
+    @Autowired
+    lateinit var fragmentRepository: FragmentRepository
+
     fun addSong(songDto: SongDto): Long {
 
-        checkFragmentsIntegrity(songDto.body)
+        val fragments = songDto.body.map { Fragment(it.id, it.position, it.text, it.isChorus) }.toSet()
+        checkFragmentsIntegrity(fragments)
 
         return songRepository
                 .save(
                         Song(
                                 id = null,
                                 text = songDto.text,
-                                body = songDto.body,
+                                body = fragments,
                                 title = songDto.title,
+                                author = songDto.author,
                                 phases = songDto.phases.map { Phase(it) }.toSet(),
                                 sheet = songDto.sheet
                         )
@@ -64,14 +67,15 @@ class SongService {
     }
 
     fun addSheet(songId: Long, sheet: Sheet) {
-        var song = findByIdOrThrow(songId)
+        val song = findByIdOrThrow(songId)
         song.sheet = sheet
         songRepository
                 .save(song)
     }
 
-    fun addFragment(songId: Long, fragment: Fragment) {
-        var song = findByIdOrThrow(songId)
+    fun addFragment(songId: Long, fragmentDto: FragmentDto) {
+        val song = findByIdOrThrow(songId)
+        val fragment = Fragment(null, fragmentDto.position, fragmentDto.text, fragmentDto.isChorus)
         song.body = song.body + fragment
         checkFragmentsIntegrity(song.body)
 
@@ -79,17 +83,25 @@ class SongService {
                 .save(song)
     }
 
-    fun getSongsContainingText(searchString: String, searchTitleMapped: String): List<SongDto> {
-        val exampleMatcher =
-                ExampleMatcher
-                        .matching()
-                        .withMatcher("text", ExampleMatcher.GenericPropertyMatcher().contains().ignoreCase())
-                        .withMatcher("title", ExampleMatcher.GenericPropertyMatcher().contains().ignoreCase())
-                        .withIgnorePaths("id")
+    fun updateFragment(songId: Long, position: Long, fragmentDto: FragmentDto) {
+        val song = findByIdOrThrow(songId)
+        if (!song.body.any { it.position == position }) throw ResponseStatusException(HttpStatus.NOT_FOUND, "No fragment with position $position exists!")
+        song.body = song.body.filterNot { it.position == position }.plus(Fragment(null, position, fragmentDto.text, fragmentDto.isChorus)).toSet()
+        checkFragmentsIntegrity(song.body)
+        songRepository
+                .save(song)
+    }
 
-        val example = Example.of(Song(null, searchString, setOf(), searchTitleMapped, setOf(), null), exampleMatcher)
+    fun updateAuthor(songId: Long, author: String) {
+        val song = findByIdOrThrow(songId)
+        song.author = author
+        songRepository
+                .save(song)
+    }
+
+    fun getSongsContainingText(searchString: String, searchTitleMapped: String): List<SongDto> {
         return songRepository
-                .findAll(example)
+                .getSongsContainingTextAndTitle(searchString, searchTitleMapped)
                 .map { it.toDto() }
     }
 
@@ -121,9 +133,9 @@ class SongService {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "A song cannot contain more than one chorus!")
         }
 
-        var sortedFragments = fragments
+        val sortedFragments = fragments
                 .sortedBy { it.position }
-        var nonStrictFragments = sortedFragments
+        val nonStrictFragments = sortedFragments
                 .filterIndexed { index, fragment -> fragment.position != index.toLong() }
         if (nonStrictFragments.isNotEmpty()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST,

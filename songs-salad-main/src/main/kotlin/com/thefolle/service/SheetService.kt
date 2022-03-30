@@ -2,6 +2,7 @@ package com.thefolle.service
 
 import com.thefolle.domain.Sheet
 import com.thefolle.domain.Song
+import com.thefolle.dto.SheetDto
 import com.thefolle.repository.SheetRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.repository.findByIdOrNull
@@ -15,8 +16,9 @@ class SheetService {
     @Autowired
     lateinit var sheetRepository: SheetRepository
 
-    fun getSheet(sheetId: Long): Sheet {
+    fun getSheet(sheetId: Long): SheetDto {
         return findByIdOrThrow(sheetId)
+                .toDto()
     }
 
     private fun findByIdOrThrow(sheetId: Long): Sheet {
