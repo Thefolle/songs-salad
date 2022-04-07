@@ -9,7 +9,7 @@ pipeline {
     }
   post {
     success {
-      bat 'Build successful'
+      echo env.ENV_EXAMPLE
     }
   }
 }
