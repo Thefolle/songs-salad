@@ -99,9 +99,17 @@ class SongService {
                 .save(song)
     }
 
-    fun getSongsContainingText(searchString: String, searchTitleMapped: String): List<SongDto> {
-        return songRepository
+    fun getSongsContainingText(searchString: String, searchTitleMapped: String, phaseValue: Phase.PhaseValue?): List<SongDto> {
+        var songsFilteredByTitleAndText = songRepository
                 .getSongsContainingTextAndTitle(searchString, searchTitleMapped)
+
+        if (phaseValue != null) {
+            songsFilteredByTitleAndText = songsFilteredByTitleAndText
+                    .filter { it.phases.any { phase -> phase.phaseValue == phaseValue } }
+                    .toSet()
+        }
+
+        return songsFilteredByTitleAndText
                 .map { it.toDto() }
     }
 

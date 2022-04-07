@@ -42,7 +42,7 @@ class SheetController {
                 .getSheet(
                         sheetId
                 )
-        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SongController::class.java).getSongs(null, null)).withRel("songs")
+        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SongController::class.java).getSongs(null, null, null)).withRel("songs")
         sheet.add(link)
 
         return ResponseEntity

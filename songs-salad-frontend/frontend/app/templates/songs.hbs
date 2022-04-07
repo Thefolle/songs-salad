@@ -8,6 +8,14 @@
   <SearchBar @label="Search songs whose text contain the following word: " @setSearchText={{@model.setSearchText}}/>
   <SearchBar @label="Search songs by title: " @setSearchText={{@model.setSearchTitle}}/>
 
+  <label style="padding-left: 10px;" for="phases">Search songs by phase: </label>
+  <select id="phases">
+    <option value="" onclick={{@model.setSearchPhase}} style="font-style: italic;">All</option>
+    {{#each @model.phases as |phase|}}
+      <option value={{phase}} onclick={{@model.setSearchPhase}}>{{phase}}</option>
+    {{/each}}
+  </select>
+
   <SongsList @songs={{@model.songs}} @title="Matching songs" />
 
 </section>

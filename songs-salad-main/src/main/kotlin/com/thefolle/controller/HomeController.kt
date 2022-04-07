@@ -11,7 +11,7 @@ class HomeController {
 
     @GetMapping("")
     fun home(): ResponseEntity<CollectionModel<Set<*>>> {
-        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SongController::class.java).getSongs(null, null)).withRel("songs")
+        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SongController::class.java).getSongs(null, null, null)).withRel("songs")
 
         return ResponseEntity
                 .ok(

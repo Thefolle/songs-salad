@@ -129,11 +129,11 @@ class SongController {
      */
     @CrossOrigin
     @GetMapping("", produces = ["application/vnd.api+json"])
-    fun getSongs(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("searchInTitle", required = false) searchInTitle: String?): ResponseEntity<CollectionModel<SongDto>> {
+    fun getSongs(@RequestParam("searchInText", required = false) searchInText: String?, @RequestParam("searchInTitle", required = false) searchInTitle: String?, @RequestParam("searchPage", required = false) searchPhase: Phase.PhaseValue?): ResponseEntity<CollectionModel<SongDto>> {
         val searchInTextMapped = searchInText ?: ""
         val searchInTitleMapped = searchInTitle ?: ""
 
-        val songs = songService.getSongsContainingText(searchInTextMapped, searchInTitleMapped)
+        val songs = songService.getSongsContainingText(searchInTextMapped, searchInTitleMapped, searchPhase)
 
         songs.forEach {
             it.add(WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSong(it.id!!.toLong())).withSelfRel())
@@ -156,10 +156,10 @@ class SongController {
                         songId
                 )
 
-        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSongs(null, null)).withRel("collection")
+        val link = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSongs(null, null, null)).withRel("collection")
         val selfLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.javaClass).getSong(songId)).withSelfRel()
-        song.add(link)
         song.add(selfLink)
+        song.add(link)
         val sheetId = song.sheet?.id
         if (sheetId != null) {
             val sheetLink = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(SheetController::class.java).getSheet(sheetId)).withRel("sheet")

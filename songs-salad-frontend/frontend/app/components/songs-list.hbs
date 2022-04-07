@@ -3,7 +3,7 @@
 
 <BsAccordion as |accordion|>
   {{#each @songs as |song index|}}
-    <accordion.item @value={{index}} @title={{song.title}}>
+    <accordion.item @value={{index}} @title="{{song.title}} {{if song.author (concat '(' song.author ')')}}">
         {{#if song.phases}}
           <p>For: {{song.phases}}</p>
         {{/if}}
@@ -28,11 +28,9 @@
         {{else}}
           <i>No sheet is available for this song yet.</i>
         {{/if}}
-
-
-
     </accordion.item>
   {{/each}}
 </BsAccordion>
+{{else}}
 
 {{/if}}

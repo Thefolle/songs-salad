@@ -18,6 +18,7 @@ class Phase(
         Saint,
         Communion,
         End,
-        Baptism
+        Baptism,
+        Adoration
     }
 }
