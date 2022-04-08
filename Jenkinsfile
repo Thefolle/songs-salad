@@ -3,7 +3,9 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        bat 'set'
+        dir(path: 'songs-salad-main')
+        bat(script: './mvnw clean', returnStdout: true)
+        bat(script: './mvnw compile', returnStdout: true)
       }
     }
 
