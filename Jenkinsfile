@@ -7,15 +7,7 @@ pipeline {
           bat(script: './mvnw clean', returnStdout: true)
           bat(script: './mvnw package', returnStdout: true)
         }
-
       }
     }
-
-  }
-  post {
-    success {
-      echo env.ENV_EXAMPLE
-    }
-
   }
 }
