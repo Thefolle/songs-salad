@@ -5,6 +5,7 @@ import com.thefolle.dto.FragmentDto
 import com.thefolle.dto.SongDto
 import com.thefolle.service.SongService
 import org.junit.jupiter.api.*
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.data.neo4j.core.Neo4jClient
@@ -249,6 +250,63 @@ class SongsSaladMainApplicationTests {
 
 
 		assert(songIds.containsAll(songs.map { it.id!!.toLong() }) && songIds.count() == songs.count())
+	}
+
+	@Test
+	fun getSongsWhenMultipleSongsAndMatchingTextShouldReturnSomeSongs() {
+		// setup
+		val texts = setOf(
+				setOf("Frutto della nostra terra...", "E sarò pane, e sarò vino..."),
+				setOf("Pane di vita sei...", "Il tuo corpo ci sazierà..."),
+				setOf("Santo santo santo"),
+				setOf("Tantum ergo sacramentum...")
+		)
+		val titles = setOf(
+				"Frutto della nostra terra",
+				"Pane di vita",
+				"Santo",
+				"Tantum ergo"
+		)
+		val phases = setOf(
+				Phase(Phase.PhaseValue.Communion),
+				Phase(Phase.PhaseValue.Communion),
+				Phase(Phase.PhaseValue.Saint),
+				Phase(Phase.PhaseValue.Adoration)
+		)
+		val indexes = setOf(0, 1, 2, 3)
+		val oracleSongs = indexes
+				.map {
+					SongDto(
+							null,
+							null,
+							texts.elementAt(it).mapIndexed { index, text ->
+								FragmentDto(
+										null,
+										index.toLong(),
+										text,
+										false
+								)
+							}.toSet(),
+							titles.elementAt(it),
+							null,
+							setOf(
+									phases.elementAt(it).phaseValue
+							),
+							null
+					)
+				}
+
+		val songIds = oracleSongs
+				.map {
+					songService
+							.addSong(it)
+				}
+
+		// act
+		val songs = songService
+				.getSongsContainingText("pane", "", null)
+
+		assert(songs.count() == 2)
 	}
 
 }
