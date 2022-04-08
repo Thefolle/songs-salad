@@ -1,19 +1,13 @@
 pipeline {
   agent any
   stages {
-    stage('Build') {
+    stage('Build & Test') {
       steps {
         dir(path: 'songs-salad-main') {
           bat(script: './mvnw clean', returnStdout: true)
-          bat(script: './mvnw compile', returnStdout: true)
+          bat(script: './mvnw package', returnStdout: true)
         }
 
-      }
-    }
-
-    stage('Test') {
-      steps {
-        echo 'Run system tests'
       }
     }
 
