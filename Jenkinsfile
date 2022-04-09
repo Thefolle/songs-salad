@@ -14,6 +14,7 @@ pipeline {
       steps {
         dir(path: 'songs-salad-main') {
           bat './mvnw verify -DskipUnitTests -Dmaven.main.skip'
+          junit(allowEmptyResults: true, testResults: '**/surefire-reports/TEST-*.xml')
         }
 
       }
