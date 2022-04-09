@@ -4,8 +4,7 @@ pipeline {
     stage('Build & Test') {
       steps {
         dir(path: 'songs-salad-main') {
-          bat './mvnw clean'
-          bat './mvnw package'
+          bat './mvnw package -DskipTests'
         }
 
       }
