@@ -1,7 +1,7 @@
 pipeline {
   agent any
   stages {
-    stage('Build & Test') {
+    stage('Build') {
       steps {
         dir(path: 'songs-salad-main') {
           bat './mvnw package -DskipTests'
