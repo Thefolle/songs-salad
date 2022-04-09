@@ -13,7 +13,7 @@ pipeline {
     stage('Integration Test') {
       steps {
         dir(path: 'songs-salad-main') {
-          bat './mvnw verify -DskipUnitTests'
+          bat './mvnw verify -DskipUnitTests -Dmaven.main.skip'
         }
 
       }
