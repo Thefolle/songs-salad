@@ -22,7 +22,7 @@ pipeline {
 
     stage('Notify') {
       steps {
-        emailext(subject: 'Jenkins', to: 'cdavide8@gmail.com', body: 'Check output.')
+        emailext(subject: 'Jenkins', to: 'prova@yopmail.com', body: 'Check output.')
       }
     }
 
