@@ -20,5 +20,11 @@ pipeline {
       }
     }
 
+    stage('Notify') {
+      steps {
+        emailext(subject: 'Jenkins ${JOB_NAME} - Build #${BUILD_NUMBER} - ${currentBuild.currentResult}', from: 'Jenkins', to: 'cdavide8@gmail.com', body: 'Check output at ${BUILD_URL}.')
+      }
+    }
+
   }
 }
