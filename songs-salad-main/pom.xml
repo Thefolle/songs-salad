@@ -80,6 +80,18 @@
 					</dependency>
 				</dependencies>
 			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<!-- This parameter redirects the report to the console (if false) or to ${project.basedir}/target/failsafe-reports/failsafe-summary.xml -->
+					<useFile>true</useFile>
+					<!-- <testClassesDirectory>${project.basedir}/target/classes</testClassesDirectory> -->
+					<!-- Use this parameter to narrow the set of integration tests to run -->
+					<!-- <test>SimulationIT</test> -->
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 
