@@ -1,7 +1,13 @@
 services:
   db:
-    image: neo4j
+    image: db
     ports:
-      - 7473: 7473
-      - 7474: 7474
-      - 7687: 7687
+      - "7473:7473"
+      - "7474:7474"
+      - "7687:7687"
+  server:
+    image: server
+    ports:
+      - "8081:8081"
+    links:
+      - "db:db"

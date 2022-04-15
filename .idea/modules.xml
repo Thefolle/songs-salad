@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/db/db.iml" filepath="$PROJECT_DIR$/db/db.iml" />
       <module fileurl="file://$PROJECT_DIR$/songs-salad-frontend/songs-salad-frontend.iml" filepath="$PROJECT_DIR$/songs-salad-frontend/songs-salad-frontend.iml" />
       <module fileurl="file://$PROJECT_DIR$/songs-salad-main/songs-salad-main.iml" filepath="$PROJECT_DIR$/songs-salad-main/songs-salad-main.iml" />
     </modules>
